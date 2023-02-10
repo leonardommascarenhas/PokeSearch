@@ -5,7 +5,7 @@
       <button type="submit">Submit</button>
     </form>
 
-    <div v-if="stats">
+    <div v-if="evolutionChain">
       <Card :name="pokemonName" :stats="this.stats" :imageSrc="pokemonImage" />
     </div>
     <div v-if="evolutionData">Evolutions:</div>
@@ -20,9 +20,11 @@ export default {
   data() {
     return {
       pokemonName: "",
+      nextPokemonName: "",
       stats: "",
       evolutionData: null,
       pokemonImage: "",
+      evolutionChain: [],
     };
   },
   components: { Card },
@@ -40,25 +42,8 @@ export default {
         const evolutionUrl = speciesResponse.data.evolution_chain.url;
 
         const evolutionData = await axios.get(evolutionUrl);
-        this.evolutionData = evolutionData.data.chain;
-        this.fetchEvolution();
-      } catch (error) {
-        console.error(error);
-        this.evolutionData = null;
-      }
-    },
-    async fetchEvolution() {
-      try {
-        let antiBreak = 0;
-        let hasNextEvolution = this.evolutionData.evolves_to.length;
-        while (hasNextEvolution > 0) {
-          let evolution = this.evolutionData.evolves_to[0];
-          this.evolutionData = evolution;
-          console.log(this.evolutionData);
-          if (antiBreak > 20) {
-            break;
-          }
-        }
+        this.evolutionData = evolutionData.data.chain.evolves_to[0];
+        this.pokemonName = evolutionData.data.chain.evolves_to[0].species;
       } catch (error) {
         console.error(error);
         this.evolutionData = null;
