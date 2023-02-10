@@ -1,14 +1,20 @@
 <template>
   <main>
     <form @submit.prevent="fetchPokemon">
-      <input type="text" v-model="pokemonName" />
+      <input type="text" v-model="pokemon.name" />
       <button type="submit">Submit</button>
     </form>
 
-    <div v-if="evolutionChain">
-      <Card :name="pokemonName" :stats="this.stats" :imageSrc="pokemonImage" />
+    <div v-if="pokemonArray != []">
+      <Card
+        v-for="(pokemon, index) in pokemonArray"
+        :key="index"
+        :name="pokemon.name"
+        :stats="pokemon.stats"
+        :imageSrc="pokemon.pokemonImage"
+      />
     </div>
-    <div v-if="evolutionData">Evolutions:</div>
+    <div v-if="pokemon.evolutionData">Evolutions:</div>
   </main>
 </template>
 
@@ -19,12 +25,13 @@ import Card from "./components/Card.vue";
 export default {
   data() {
     return {
-      pokemonName: "",
-      nextPokemonName: "",
-      stats: "",
-      evolutionData: null,
-      pokemonImage: "",
-      evolutionChain: [],
+      pokemon: {
+        name: "",
+        stats: "",
+        evolutionData: null,
+        pokemonImage: "",
+      },
+      pokemonArray: [],
     };
   },
   components: { Card },
@@ -32,22 +39,28 @@ export default {
     async fetchPokemon() {
       try {
         const response = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon/${this.pokemonName.toLowerCase()}`
+          `https://pokeapi.co/api/v2/pokemon/${this.pokemon.name.toLowerCase()}`
         );
-        this.stats = response.data.stats;
-        this.pokemonImage = response.data.sprites.front_default;
+        this.pokemon.stats = response.data.stats;
+        this.pokemon.pokemonImage = response.data.sprites.front_default;
         const speciesUrl = response.data.species.url;
 
         const speciesResponse = await axios.get(speciesUrl);
         const evolutionUrl = speciesResponse.data.evolution_chain.url;
 
         const evolutionData = await axios.get(evolutionUrl);
-        this.evolutionData = evolutionData.data.chain.evolves_to[0];
-        this.pokemonName = evolutionData.data.chain.evolves_to[0].species;
+        this.pokemon.evolutionData = evolutionData.data.chain.evolves_to[0];
+        this.addPokemon(this.pokemon);
+        console.log(this.pokemon);
       } catch (error) {
         console.error(error);
-        this.evolutionData = null;
+        this.pokemon.evolutionData = null;
       }
+    },
+    addPokemon(pokemon) {
+      this.pokemonArray.push(pokemon);
+      this.pokemon = {};
+      console.log(this.pokemon);
     },
   },
 };
