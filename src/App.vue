@@ -8,7 +8,7 @@
     <div v-if="stats">
       <Card :name="pokemonName" :stats="this.stats" :imageSrc="pokemonImage" />
     </div>
-    <div v-if="evolutionChain">Evolutions:</div>
+    <div v-if="evolutionData">Evolutions:</div>
   </main>
 </template>
 
@@ -21,7 +21,7 @@ export default {
     return {
       pokemonName: "",
       stats: "",
-      evolutionChain: null,
+      evolutionData: null,
       pokemonImage: "",
     };
   },
@@ -39,20 +39,29 @@ export default {
         const speciesResponse = await axios.get(speciesUrl);
         const evolutionUrl = speciesResponse.data.evolution_chain.url;
 
-        const evolutionChain = await axios.get(evolutionUrl);
-        this.evolutionChain = evolutionChain.data.chain;
-
-        console.log(this.evolutionChain);
+        const evolutionData = await axios.get(evolutionUrl);
+        this.evolutionData = evolutionData.data.chain;
+        this.fetchEvolution();
       } catch (error) {
         console.error(error);
-        this.evolutionChain = null;
+        this.evolutionData = null;
       }
     },
     async fetchEvolution() {
       try {
+        let antiBreak = 0;
+        let hasNextEvolution = this.evolutionData.evolves_to.length;
+        while (hasNextEvolution > 0) {
+          let evolution = this.evolutionData.evolves_to[0];
+          this.evolutionData = evolution;
+          console.log(this.evolutionData);
+          if (antiBreak > 20) {
+            break;
+          }
+        }
       } catch (error) {
         console.error(error);
-        this.evolutionChain = null;
+        this.evolutionData = null;
       }
     },
   },
