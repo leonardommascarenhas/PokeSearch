@@ -50,9 +50,8 @@ export default {
 
         const speciesResponse = await axios.get(speciesUrl);
         const evolutionUrl = speciesResponse.data.evolution_chain.url;
-
         const evolutionData = await axios.get(evolutionUrl);
-        pokemon.evolutionData = evolutionData.data.chain.evolves_to[0];
+        pokemon.evolutionData = evolutionData.data.chain;
         this.addPokemon(pokemon);
       } catch (error) {
         console.error(error);
@@ -67,17 +66,16 @@ export default {
         this.pokemon.evolutionData = null;
       }
     },
-    async hasEvolution(pokemon) {
-      try {
-        if (pokemon.evolutionData.evolves_to !== []) {
-          console.group(pokemon);
-        }
-      } catch {}
-    },
-    addPokemon(pokemon) {
-      this.hasEvolution(this.pokemon);
+    async addPokemon(pokemon) {
       this.pokemonArray.push(pokemon);
-      this.pokemon = {};
+      let chainPosition = this.pokemon.evolutionData.evolves_to[0].species.name;
+      while (chainPosition !== "") {
+        this.fetchPokemon(chainPosition);
+        await this.pokemonArray.push(this.pokemon);
+        chainPosition = this.pokemon.evolutionData.evolves_to[0].species.name;
+        this.pokemon = {};
+        console.log(this.pokemon);
+      }
     },
   },
 };
