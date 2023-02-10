@@ -36,7 +36,7 @@ export default {
     async fetchPokemon() {
       try {
         const response = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon/${this.pokemonName}`
+          `https://pokeapi.co/api/v2/pokemon/${this.pokemonName.toLowerCase()}`
         );
         this.stats = response.data.stats;
         this.pokemonImage = response.data.sprites.front_default;
@@ -45,6 +45,13 @@ export default {
         const evolutionUrl = speciesResponse.data.evolution_chain.url;
         const evolutionChain = await axios.get(evolutionUrl);
         this.evolutionChain = evolutionChain.data.chain;
+      } catch (error) {
+        console.error(error);
+        this.evolutionChain = null;
+      }
+    },
+    async fetchEvolution() {
+      try {
       } catch (error) {
         console.error(error);
         this.evolutionChain = null;
