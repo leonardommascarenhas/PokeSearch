@@ -1,20 +1,28 @@
 <template>
   <main>
-    <form @submit.prevent="searchPokemon">
-      <input type="text" v-model="searchName" />
-      <button type="submit">Submit</button>
-    </form>
-
-    <div v-if="pokemonArray != []">
-      <Card
-        v-for="(pokemon, index) in pokemonArray"
-        :key="index"
-        :name="pokemon.name"
-        :stats="pokemon.stats"
-        :imageSrc="pokemon.pokemonImage"
-      />
-    </div>
-    <div v-if="evolutionData">Evolutions:</div>
+    <section>
+      <h1>PokeSearch!</h1>
+    </section>
+    <section>
+      <form @submit.prevent="searchPokemon">
+        <input
+          type="text"
+          v-model="searchName"
+          placeholder="What's your favorite pokemon?"
+        />
+        <button type="submit">Submit</button>
+      </form>
+      <div v-if="pokemonArray != []">
+        <Card
+          v-for="(pokemon, index) in pokemonArray"
+          :key="index"
+          :name="pokemon.name"
+          :stats="pokemon.stats"
+          :imageSrc="pokemon.pokemonImage"
+        />
+      </div>
+    </section>
+    <div v-if="pokemon.evolutionData">Evolutions:</div>
   </main>
 </template>
 
