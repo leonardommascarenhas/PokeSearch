@@ -4,7 +4,11 @@
       <h1>PokeSearch!</h1>
     </section>
     <section>
-      <form @submit.prevent="searchPokemon">
+      <form
+        @submit.prevent="searchPokemon"
+        v-on:click="isSelected = true"
+        :class="this.pokemonArray.length && 'up'"
+      >
         <input
           type="text"
           v-model="searchName"

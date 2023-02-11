@@ -45,7 +45,7 @@ form {
 }
 
 form.up {
-  transform: translateY(-350px);
+  transform: translateY(-35%);
 }
 
 input {
