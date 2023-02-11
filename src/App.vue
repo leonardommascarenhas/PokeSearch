@@ -1,7 +1,7 @@
 <template>
   <main>
     <form @submit.prevent="searchPokemon">
-      <input type="text" v-model="pokemon.name" />
+      <input type="text" v-model="searchName" />
       <button type="submit">Submit</button>
     </form>
 
@@ -14,7 +14,7 @@
         :imageSrc="pokemon.pokemonImage"
       />
     </div>
-    <div v-if="pokemon.evolutionData">Evolutions:</div>
+    <div v-if="evolutionData">Evolutions:</div>
   </main>
 </template>
 
@@ -28,9 +28,10 @@ export default {
       pokemon: {
         name: "",
         stats: "",
-        evolutionData: null,
         pokemonImage: "",
       },
+      evolutionData: null,
+      searchName: "",
       pokemonArray: [],
     };
   },
@@ -39,42 +40,47 @@ export default {
     async fetchPokemon(pokemon) {
       try {
         const response = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon/${pokemon.name
+          `https://pokeapi.co/api/v2/pokemon/${pokemon
             .replace("'", "")
             .replace(/[.: ']+/g, "-")
             .toLowerCase()}`
         );
-        pokemon.stats = response.data.stats;
-        pokemon.pokemonImage = response.data.sprites.front_default;
+        this.pokemon.name = response.data.species.name;
+        this.pokemon.stats = response.data.stats;
+        this.pokemon.pokemonImage = response.data.sprites.front_default;
         const speciesUrl = response.data.species.url;
-
         const speciesResponse = await axios.get(speciesUrl);
         const evolutionUrl = speciesResponse.data.evolution_chain.url;
         const evolutionData = await axios.get(evolutionUrl);
-        pokemon.evolutionData = evolutionData.data.chain;
-        this.addPokemon(pokemon);
+
+        this.evolutionData = evolutionData.data.chain;
+
+        let currentPokemon = this.evolutionData;
+
+        while (currentPokemon) {
+          let response = await axios.get(
+            `https://pokeapi.co/api/v2/pokemon/${currentPokemon.species.name.toLowerCase()}`
+          );
+          this.pokemon.name = response.data.name;
+          this.pokemon.stats = response.data.stats;
+          this.pokemon.pokemonImage = response.data.sprites.front_default;
+          this.pokemonArray.push(this.pokemon);
+          this.pokemon = {};
+
+          currentPokemon = currentPokemon.evolves_to[0];
+        }
       } catch (error) {
         console.error(error);
-        this.pokemon.evolutionData = null;
+        this.evolutionData = null;
       }
     },
     async searchPokemon() {
       try {
-        this.fetchPokemon(this.pokemon);
+        this.pokemonArray = [];
+        this.fetchPokemon(this.searchName);
       } catch (error) {
         console.error(error);
-        this.pokemon.evolutionData = null;
-      }
-    },
-    async addPokemon(pokemon) {
-      this.pokemonArray.push(pokemon);
-      let chainPosition = this.pokemon.evolutionData.evolves_to[0].species.name;
-      while (chainPosition !== "") {
-        this.fetchPokemon(chainPosition);
-        await this.pokemonArray.push(this.pokemon);
-        chainPosition = this.pokemon.evolutionData.evolves_to[0].species.name;
-        this.pokemon = {};
-        console.log(this.pokemon);
+        this.evolutionData = null;
       }
     },
   },
