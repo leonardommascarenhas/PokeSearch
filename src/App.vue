@@ -1,6 +1,7 @@
 <template>
   <header class="title">
     <h1 class="app-title">PokeSearch!</h1>
+    <h3>Type a pokemon and see the evolution chain!</h3>
     <form @submit.prevent="searchPokemon" v-on:click="isSelected = true">
       <input
         type="text"
