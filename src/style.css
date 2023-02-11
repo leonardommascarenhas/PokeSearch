@@ -5,6 +5,7 @@
   font-style: normal;
 }
 
+
 * {
   margin: 0;
   padding: 0;
@@ -16,24 +17,33 @@ h1 {
   color: #fff;
   text-align: center;
   font-size: 48px;
-  margin-top: 100px;
+  padding: 40px 0
 }
 
-main {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 20% 80%;
-  grid-column-gap: 0px;
-  height: 100vh;
-  width: 100vw;
-  background-image: radial-gradient(circle, #2c2c2c, black);
-}
-
-section {
+#app{
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
+   width: 100vw;
+   min-height: 100vh;
+   background-image: radial-gradient(circle, #2c2c2c, black);
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  width: 100%;
+}
+
+.results  {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 75%;
 }
 
 form {
@@ -41,15 +51,11 @@ form {
   gap: 20px;
   height: 70px;
   transition: 750ms;
-  width: 60%;
-}
-
-form.up {
-  transform: translateY(-35%);
+  width: 75%;
 }
 
 input {
-  width: 80%;
+  width: 100%;
   background: transparent;
   border: 2px solid dimgrey;
   border-radius: 4px;
@@ -75,7 +81,7 @@ input::placeholder {
 }
 
 button {
-  width: 20%;
+  width: 40%;
   background: transparent;
   border: 4px solid dimgrey;
   color: white;
@@ -91,4 +97,29 @@ button:hover {
 button:active {
   background: grey;
   border-color: grey;
+}
+.error-popup {
+  color: grey;
+}
+@media (max-width: 640px) {
+  main {
+    grid-template-rows: 10% 60% 30%;
+    grid-template-areas: 'title' 'results' 'inputs';
+  }
+  h1 {
+    font-size: 22px;
+  }
+  form {
+    width: 80%;
+    height: 140px;
+    flex-direction: column;
+  }
+  input {
+    width: 100%;
+    height: 50%;
+  }
+  button {
+    width: 100%;
+    height: 50%;
+  }
 }

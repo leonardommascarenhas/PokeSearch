@@ -1,39 +1,52 @@
 <template>
   <div class="threed-space">
     <div class="flipper">
-      <input type="checkbox" id="switch" />
-      <label
-        for="switch"
-        class="card flipper"
-        @click="displayBlock = !displayBlock"
+      <div
+        @click="flipCard"
+        :class="classes"
       >
         <div class="front">
           <div class="card-header">
-            {{ name }}
+            {{ name.charAt(0).toUpperCase() + name.slice(1) }}
           </div>
           <div class="card-image">
             <img :src="imageSrc" />
           </div>
         </div>
         <div class="back">
-          <div class="card-body" v-show="displayBlock">
+          <div class="card-body">
             <ul>
-              <li v-for="stat in stats" :key="stat.stat.name">
-                {{ stat.stat.name }}: {{ stat.base_stat }}
+              <li v-for="stat in stats" :key="stat.name">
+                {{stat}}
               </li>
             </ul>
           </div>
         </div>
-      </label>
+      </div>
     </div>
   </div>
 </template>
 <script>
+
 export default {
+  data() {
+    return {
+      isFlipped: false,
+    }
+  },
   methods: {
-    displayStats(element) {
-      return (element.display = "block");
-    },
+    flipCard() {
+      this.isFlipped = !this.isFlipped
+    }
+  },
+  computed: {
+    classes() {
+      return {
+        flipped: this.isFlipped,
+        'card': true,
+        'flipper': true
+      }
+    }
   },
   props: {
     stats: {
@@ -48,11 +61,6 @@ export default {
       type: String,
       required: true,
     },
-  },
-  data() {
-    return {
-      displayBlock: false,
-    };
   },
 };
 </script>
@@ -71,9 +79,11 @@ export default {
   position: relative;
   cursor: pointer;
 }
-#switch:checked ~ .flipper {
+
+.flipper.flipped {
   transform: rotateY(180deg);
 }
+
 .front {
   position: absolute;
   width: 100%;
@@ -107,10 +117,6 @@ export default {
   transition: 0.3s;
 }
 
-.card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-  transform: translateY(-5px);
-}
 .card-header {
   color: black;
   padding: 20px 10px;
